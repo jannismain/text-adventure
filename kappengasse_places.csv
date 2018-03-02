@@ -1,0 +1,15 @@
+Coffee Floathome,Nuremberg City,None,None,None
+Hairdresser,None,Nuremberg City,None,None,This is the shop of Gerhard the hair dresser. He has two cute little dogs that love to eat chicken nuggets in the form of dinosaurs.
+Electronic's Store,None,None,None,Nuremberg City
+Nuremberg City,House Entrance,Electronic's Store,Coffee Floathome,Hairdresser
+House Entrance*,House,None,Nuremberg City,None,There is a closed door and a doorbell with three names on it.
+House,Your Apartment Door,Neighbour's Apartment Door,House Entrance,Other Neighbour's Apartment Door
+Neighbour's Apartment Door,None,None,None,House,Nobody seems to be home
+Other Neighbour's Apartment Door,None,House,None,None
+Your Apartment Door,Apartment,None,House,None
+Apartment,Kitchen,Living Room,Your Apartment Door,None
+Kitchen,None,None,Apartment,None
+Living Room,Bedroom,Office,Bathroom,Apartment
+Bathroom,Living Room,None,None,None
+Bedroom,None,None,Living Room,None, 
+Office,None,None,None,Living Room,The Office is a place of productivity
