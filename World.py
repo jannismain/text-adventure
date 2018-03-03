@@ -8,7 +8,8 @@ class World:
 
     def __init__(self, data: str):
         self.tiles, self.current_tile = self.load(data)
-        # print("Places: ", self.tiles)
+        [tile.discover_tiles(self) for tile in self.tiles]
+        print("Places: ", self.tiles)
         # print(self.current_tile)
     
     @staticmethod
@@ -41,8 +42,7 @@ class World:
                 direction = self.get_full_direction(direction)
             except ValueError:
                 print("Beep! {} is not a valid geographic direction!")
-        a = getattr(self.current_tile, direction)
-        new_tile = self.get_tile(a)
+        new_tile = self.get_tile(self.current_tile.surrounding[direction])
         if new_tile:
             self.current_tile = new_tile
             print("You entered '{}'.".format(self.current_tile.name))
@@ -79,17 +79,26 @@ class Tile:
         else:
             self.name = name
         self.description = description
-
-        self.north = north
-        self.east = east
-        self.south = south
-        self.west = west
+        
+        self.surrounding = {
+            "north": north,
+            "east": east,
+            "south": south,
+            "west": west
+        }
 
         self.test_tile_validity()
     
+    def get_exits(self):
+        return [dir for (dir, tile) in self.surrounding.items() if tile != None]
+    
     def test_tile_validity(self):
-        assert(any([self.north, self.east, self.south, self.west]))
-
+        assert(any([tile for tile in self.surrounding.items() if tile != "None"]))
+    
+    def discover_tiles(self, world: World):
+        for dir, tile_desc in self.surrounding.items():
+            self.surrounding[dir] = world.get_tile(tile_desc)
+    
     def __str__(self):
         return self.name
     
