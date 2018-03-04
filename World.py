@@ -2,6 +2,13 @@ import sys
 import os
 import csv
 
+DIRECTIONS = {
+    'n': 'north',
+    'e': 'east',
+    's': 'south',
+    'w': 'west'
+}
+
 
 class World:
     """Word-class, that holds information about available tiles and items."""
@@ -39,7 +46,7 @@ class World:
         """Move from the current tile in the specified direction (if valid)."""
         if len(direction) == 1:
             try:
-                direction = self.get_full_direction(direction)
+                direction = DIRECTIONS[direction]
             except ValueError:
                 print("Beep! {} is not a valid geographic direction!")
         new_tile = self.get_tile(self.current_tile.surrounding[direction])
@@ -49,25 +56,11 @@ class World:
         else:
             print("Beep! This move is not available!")
     
-    @staticmethod
-    def get_full_direction(direction: str):
-        if direction == 'n':
-            return 'north'
-        elif direction == 'e':
-            return 'east'
-        elif direction == 's':
-            return 'south'
-        elif direction == 'w':
-            return 'west'
-        else:
-            raise ValueError("{} is not a valid direction.".format(direction))
-    
     def get_tile(self, name):
         for tile in self.tiles:
             if tile.name == name:
                 return tile
         return None
-
 
 
 class Tile:
