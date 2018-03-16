@@ -16,7 +16,7 @@ class World:
     def __init__(self, data: str):
         self.tiles, self.current_tile = self.load(data)
         [tile.discover_tiles(self) for tile in self.tiles]
-        print("Places: ", self.tiles)
+        # print("Places: ", self.tiles)
         # print(self.current_tile)
     
     @staticmethod
@@ -33,7 +33,7 @@ class World:
                     print("A minimal place description has the following 5 entries: name, north_exit, east_exit, south_exit, west_exit")
                     print("Additional entries are considered point of interests or items available for closer examination.")
                 except AssertionError:
-                    print("Beep! Place {} does not seem to be a valid place. It is not connected to any other tile at the moment.")
+                    print(f"Beep! Place '{datarow[0]}' does not seem to be a valid place. It is not connected to any other tile at the moment.")
                 
                 if datarow[0].endswith("*"):
                     if start_at == "":
@@ -49,7 +49,7 @@ class World:
                 direction = DIRECTIONS[direction]
             except ValueError:
                 print("Beep! {} is not a valid geographic direction!")
-        new_tile = self.get_tile(self.current_tile.surrounding[direction])
+        new_tile = self.current_tile.surrounding[direction]
         if new_tile:
             self.current_tile = new_tile
             print("You entered '{}'.".format(self.current_tile.name))
@@ -79,7 +79,6 @@ class Tile:
             "south": south,
             "west": west
         }
-
         self.test_tile_validity()
     
     def get_exits(self):
