@@ -19,8 +19,11 @@ class Textadventure:
     def main_loop(self):
         won = False
         while not won:
-            print("Your current position is '{}'.".format(self.w.current_tile.name))
+            print(f"Your current position is '{self.w.current_tile.name}'")
             print(self.w.current_tile.description)
+            for direction, tile in self.w.current_tile.surrounding.items():
+                if tile:
+                    print(f"To the {direction} is '{tile}'")
             input_cmd = input("Input> ")
             input_cmd = input_cmd.split(" ")
             if input_cmd[0] in ['m', 'move']:
