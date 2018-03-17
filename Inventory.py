@@ -6,6 +6,7 @@ class Inventory:
     """Inventory class for Textadventure."""
 
     def __init__(self, owned_by, size: int = 10):
+        self.owner = owned_by
         self.items = []
         self.size = size
 
@@ -16,7 +17,7 @@ class Inventory:
         """Add items to your inventory."""
         if len(self.items) < self.size:
             self.items.append(item)
-            print("You added {} to your inventory!".format(item))
+            print(f"You added {item} to your inventory!")
         else:
             print("Your inventory is full. Discard an item before you can add new ones!")
 
@@ -27,11 +28,19 @@ class Inventory:
         else:
             print(f"Beep! {item} is not in your inventory!")
 
+    def exists(self, item_name: str):
+        return item_name in [str(item_name) for item_name in self.items]
+
+    def get_item(self, item_name: str) -> list:
+        return [item for item in self.items if item.name == item_name]
+
     def __str__(self):
         if len(self.items) == 0:
             return "Your Inventory is empty!"
-        else:
+        elif str(self.owner).lower() is "player":
             return f"Inventory: {str(self.items)}"
+        else:
+            return f"{self.owner}: {str(self.items)}"
 
     def __repr__(self):
         return self.__str__()

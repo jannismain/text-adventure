@@ -49,12 +49,21 @@ class Textadventure:
                             print(f"To the {direction} is '{tile}'", end="\n")
                 elif input_cmd[0] in ['e', 'examine']:
                     if len(input_cmd) > 1:
-                        pass
+                        item_name = " ".join(input_cmd[1:])
+                        item = self.w.current_tile.inventory.get_item(item_name)
+                        if not item:  # check inventory, if item cannot be found with Tile
+                            item = self.p.inventory.get_item(item_name)
+                        if item:
+                            print(item[0].description)
+                        else:
+                            print(f"Beep! {item_name} cannot be found here!")
                     else:
                         print(self.w.current_tile.inventory)
                 elif input_cmd[0] in ['m', 'move']:
                     self.w.move(input_cmd[1])
                     moved = True
+                elif input_cmd[0] in ['h', 'help']:
+                    self.print_rules()
                 elif input_cmd[0] in ['i', 'inventory']:
                     print(self.p.inventory)
                 elif input_cmd[0] in ['q', 'quit', '']:
@@ -104,6 +113,12 @@ class Player:
     def move(self, direction: str):
         if direction not in ['n', 'e', 's', 'w']:
             print("Beep! This direction is not valid!")
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.__str__()
 
 
 if __name__ == '__main__':
