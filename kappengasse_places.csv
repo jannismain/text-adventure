@@ -1,9 +1,9 @@
-Coffee Floathome,Nuremberg City,None,None,None
+Coffee Floathome,Nuremberg City,None,None,None,The people working here are very nice.
 Hairdresser,None,Nuremberg City,None,None,This is the shop of Gerhard the hair dresser. He has two cute little dogs that love to eat chicken nuggets in the form of dinosaurs.
-Electronic's Store,None,None,None,Nuremberg City
-Nuremberg City,House Entrance,Electronic's Store,Coffee Floathome,Hairdresser
+Electronic's Store,None,None,None,Nuremberg City,You would need some cash to go and buy stuff there.
+Nuremberg City,House Entrance,Electronic's Store,Coffee Floathome,Hairdresser,The place where Albrecht Dürer was born. That's all you need to know.
 House Entrance*,House,None,Nuremberg City,None,There is a closed door and a doorbell with three names on it.
-House,Your Apartment Door,Neighbour's Apartment Door,House Entrance,Other Neighbour's Apartment Door
+House,Your Apartment Door,Neighbour's Apartment Door,House Entrance,Other Neighbour's Apartment Door,There lies a stroller on the floor. You wonder what it is doing there.
 Neighbour's Apartment Door,None,None,None,House,Nobody seems to be home
 Other Neighbour's Apartment Door,None,House,None,None
 Your Apartment Door,Apartment,None,House,None
