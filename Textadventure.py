@@ -8,7 +8,7 @@ import random
 import logging
 
 from World import World
-from Inventory import Inventory
+from Inventory import Inventory, GlobalInventory
 
 # TYPING_SPEED = 150  # wpm
 # immediate_print = print
@@ -26,8 +26,9 @@ class Textadventure:
     """Main class of the Textadventure game."""
 
     def __init__(self, name_player, name_game):
-        self.w = World('{}_places.csv'.format(name_game.lower()))
+        self.w = World(f'{name_game.lower()}_places.csv')
         self.p = Player(name_player)
+        self.i = GlobalInventory(f'{name_game.lower()}_items.csv', world=self.w, player=self.p)
         self.welcome(name_player, name_game)
         self.main_loop()
 
@@ -36,6 +37,7 @@ class Textadventure:
         print(f"Your current position is '{self.w.current_tile.name}'.")
         while not won:
             print(self.w.current_tile.description)
+            print(self.w.current_tile.inventory)
             print(f"""Exits are: {", ".join(self.w.current_tile.exits)}""")
             moved = False
             while not moved:
@@ -45,6 +47,11 @@ class Textadventure:
                     for direction, tile in self.w.current_tile.surrounding.items():
                         if tile:
                             print(f"To the {direction} is '{tile}'", end="\n")
+                elif input_cmd[0] in ['e', 'examine']:
+                    if len(input_cmd) > 1:
+                        pass
+                    else:
+                        print(self.w.current_tile.inventory)
                 elif input_cmd[0] in ['m', 'move']:
                     self.w.move(input_cmd[1])
                     moved = True
@@ -90,9 +97,9 @@ class Textadventure:
 class Player:
     """Player-class, that holds the current position, the inventory and the player stats."""
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, inventory_size: int = 10):
         self.name = name
-        self.inventory = Inventory()
+        self.inventory = Inventory(owned_by=self, size=inventory_size)
 
     def move(self, direction: str):
         if direction not in ['n', 'e', 's', 'w']:

@@ -3,6 +3,8 @@ import os
 import csv
 import logging
 
+from Inventory import Item, Inventory
+
 DIRECTIONS = {
     'n': 'north',
     'e': 'east',
@@ -16,7 +18,7 @@ class World:
 
     def __init__(self, data: str):
         self.tiles, self.current_tile = self.load(data)
-        [tile.discover_tiles(self) for tile in self.tiles]
+        [tile.discover_tiles(self) for tile in self.tiles]  # replace tile's surroundings reference with actual Tiles
         logging.debug(f"Loaded Tiles: {self.tiles}")
 
     @staticmethod
@@ -84,6 +86,7 @@ class Tile:
             "south": south,
             "west": west
         }
+        self.inventory = Inventory(self)
         self.test_tile_validity()
 
     @property
