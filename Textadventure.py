@@ -3,8 +3,23 @@
 import sys
 import os
 import csv
+import time
+import random
+import logging
+
 from World import World
 from Inventory import Inventory
+
+# TYPING_SPEED = 150  # wpm
+# immediate_print = print
+
+
+# def print(t, end="\n"):
+#     for l in str(t):
+#         sys.stdout.write(l)
+#         sys.stdout.flush()
+#         time.sleep(random.random() * 10.0 / TYPING_SPEED)
+#     immediate_print('', end=end)
 
 
 class Textadventure:
@@ -15,22 +30,31 @@ class Textadventure:
         self.p = Player(name_player)
         self.welcome(name_player, name_game)
         self.main_loop()
-    
+
     def main_loop(self):
         won = False
+        print(f"Your current position is '{self.w.current_tile.name}'.")
         while not won:
-            print(f"Your current position is '{self.w.current_tile.name}'")
             print(self.w.current_tile.description)
-            for direction, tile in self.w.current_tile.surrounding.items():
-                if tile:
-                    print(f"To the {direction} is '{tile}'")
-            input_cmd = input("Input> ")
-            input_cmd = input_cmd.split(" ")
-            if input_cmd[0] in ['m', 'move']:
-                self.w.move(input_cmd[1])
-            elif input_cmd[0] in ['e', 'examine']:
-                self.inventory.examine(input_cmd[1])
-    
+            print(f"""Exits are: {", ".join(self.w.current_tile.exits)}""")
+            moved = False
+            while not moved:
+                input_cmd = input("Input> ")
+                input_cmd = input_cmd.split(" ")
+                if input_cmd[0] in ['l', 'look']:
+                    for direction, tile in self.w.current_tile.surrounding.items():
+                        if tile:
+                            print(f"To the {direction} is '{tile}'", end="\n")
+                elif input_cmd[0] in ['m', 'move']:
+                    self.w.move(input_cmd[1])
+                    moved = True
+                elif input_cmd[0] in ['i', 'inventory']:
+                    print(self.p.inventory)
+                elif input_cmd[0] in ['q', 'quit', '']:
+                    print("Do you really want go quit the game? [yes]|no")
+                    if input("> ") in ['yes', 'y', '']:
+                        exit()
+
     def welcome(self, name_player=None, name_game=None):
         if not name_player:
             print("Welcome kind sir,")
@@ -44,10 +68,23 @@ class Textadventure:
         print("Are you already familiar with the rules? [yes]|no")
         if input("> ") not in ['yes', 'y', '']:
             print("Then, let me tell you how to play this game:")
-            print(" - Move around the world by entering 'move' followed by one of the four geographic directions 'north', 'east', 'south', or 'west'. You can also use only the first letters, so 'move east' and 'm e' are both valid inputs, while 'muf noarth' and 'a o' are not.")
+            self.print_rules(header=False)
             print("Now that you know the rules, let's begin the adventure! Have fun!")
         else:
             print("Well, then let's start right away! Have fun!")
+
+    def print_rules(self, header=True):
+        if header:
+            print(" + + +   R U L E S   + + +")
+        print(" - Move around the world by entering 'move' follower by either 'north', 'east', 'south', or 'west'.")
+        print(" - Look around your current location with 'look'.")
+        print(" - Examine certain objects with 'examine' followed by the object's name.")
+        print(" - Check your current inventory with 'inventory'.")
+        print(" - Take an item from the current location with 'take' followed by the item's name.")
+        print(" - PRO TIP: You can also use just the first letter for each command for faster gameplay!", end="\n\n")
+
+    def print_surroundings(self):
+        pass
 
 
 class Player:
@@ -61,5 +98,7 @@ class Player:
         if direction not in ['n', 'e', 's', 'w']:
             print("Beep! This direction is not valid!")
 
+
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
     t = Textadventure('Jannis', 'Kappengasse')
