@@ -1,3 +1,4 @@
 Doormat;On the doormat is a message written: 'Darf ich Ihnen das Tschüss anbieten?'... Sounds german!;True;Your Apartment Door
 Doorbell;It has three names on it: "Neighbour", "Other Neighbour" and your own.";False;House Entrance
-Key;A regular key. Looks like it belongs to your house entrance door;True;Player
+Key;A regular key. Looks like it might open a door!;True;Player
+Closed Door;It is locked;False;House Entrance
