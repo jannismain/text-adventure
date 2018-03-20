@@ -66,7 +66,7 @@ class Textadventure:
                     self.print_rules()
                 elif input_cmd[0] in ['i', 'inventory']:
                     print(self.p.inventory)
-                elif input_cmd[0] in ['q', 'quit', '']:
+                elif input_cmd[0] in ['q', 'quit']:
                     print("Do you really want go quit the game? [yes]|no")
                     if input("> ") in ['yes', 'y', '']:
                         exit()
