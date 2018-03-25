@@ -1,5 +1,6 @@
 import csv
 import logging
+from typing import Union
 
 
 class Inventory:
