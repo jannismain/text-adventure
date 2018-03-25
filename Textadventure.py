@@ -25,7 +25,7 @@ from Inventory import Inventory, GlobalInventory
 class Textadventure:
     """Main class of the Textadventure game."""
 
-    def __init__(self, name_player, name_game):
+    def __init__(self, name_player: str, name_game: str):
         self.w = World(f'{name_game.lower()}_places.csv')
         self.p = Player(name_player)
         self.i = GlobalInventory(f'{name_game.lower()}_items.csv', world=self.w, player=self.p)
@@ -71,7 +71,7 @@ class Textadventure:
                     if input("> ") in ['yes', 'y', '']:
                         exit()
 
-    def welcome(self, name_player=None, name_game=None):
+    def welcome(self, name_player: str=None, name_game: str=None):
         if not name_player:
             print("Welcome kind sir,")
             print("what is your name?")
