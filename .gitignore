@@ -1,5 +1,8 @@
 # Other files
 **/*.xlsx
+**/*.svg
+**/*.pdf
+**/*.html
 
 # VSCode
 .vscode
