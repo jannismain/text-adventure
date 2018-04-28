@@ -8,18 +8,19 @@ import random
 import logging
 
 from World import World
-from Inventory import Inventory, GlobalInventory
+from Player import Player
+from Inventory import Inventory, GlobalInventory, Item
 
-# TYPING_SPEED = 150  # wpm
-# immediate_print = print
+TYPING_SPEED = 300  # wpm
+immediate_print = print
 
 
-# def print(t, end="\n"):
-#     for l in str(t):
-#         sys.stdout.write(l)
-#         sys.stdout.flush()
-#         time.sleep(random.random() * 10.0 / TYPING_SPEED)
-#     immediate_print('', end=end)
+def print(t, end="\n"):
+    for l in str(t):
+        sys.stdout.write(l)
+        sys.stdout.flush()
+        time.sleep(random.random() * 10.0 / TYPING_SPEED)
+    immediate_print('', end=end)
 
 
 class Textadventure:
@@ -29,7 +30,7 @@ class Textadventure:
         self.w = World(f'{name_game.lower()}_places.csv')
         self.p = Player(name_player)
         self.i = GlobalInventory(f'{name_game.lower()}_items.csv', world=self.w, player=self.p)
-        self.welcome(name_player, name_game)
+        # self.welcome(name_player, name_game)
         self.main_loop()
 
     def main_loop(self):
@@ -47,14 +48,18 @@ class Textadventure:
                     for direction, tile in self.w.current_tile.surrounding.items():
                         if tile:
                             print(f"To the {direction} is '{tile}'", end="\n")
-                elif input_cmd[0] in ['e', 'examine']:
+                elif input_cmd[0] in ['e', 'examine', 't', 'take']:
                     if len(input_cmd) > 1:
                         item_name = " ".join(input_cmd[1:])
-                        item = self.w.current_tile.inventory.get_item(item_name)
-                        if not item:  # check inventory, if item cannot be found with Tile
-                            item = self.p.inventory.get_item(item_name)
+                        item = self.get_item(item_name)
                         if item:
-                            print(item[0].description)
+                            if input_cmd[0] in ['t', 'take']:
+                                if item.is_obtainable:
+                                    self.p.inventory.add(item)
+                                else:
+                                    print(f"You cannot take {item}. {item.error_msg['take']}")
+                            elif input_cmd[0] in ['e', 'examine']:
+                                print(item[0].description)
                         else:
                             print(f"Beep! {item_name} cannot be found here!")
                     else:
@@ -70,6 +75,9 @@ class Textadventure:
                     print("Do you really want go quit the game? [yes]|no")
                     if input("> ") in ['yes', 'y', '']:
                         exit()
+                else:
+                    print(
+                        f"Beep! {input_cmd[0]} is not a command I recognize! Type 'help' to get a list of all available commands.")
 
     def welcome(self, name_player=None, name_game=None):
         if not name_player:
@@ -92,7 +100,7 @@ class Textadventure:
     def print_rules(self, header=True):
         if header:
             print(" + + +   R U L E S   + + +")
-        print(" - Move around the world by entering 'move' follower by either 'north', 'east', 'south', or 'west'.")
+        print(" - Move around the world by entering 'move' followed by either 'north', 'east', 'south', or 'west'.")
         print(" - Look around your current location with 'look'.")
         print(" - Examine certain objects with 'examine' followed by the object's name.")
         print(" - Check your current inventory with 'inventory'.")
@@ -102,25 +110,21 @@ class Textadventure:
     def print_surroundings(self):
         pass
 
+    def get_item(self, item_name) -> Item:
+        """Retrieve item from different Inventories.
 
-class Player:
-    """Player-class, that holds the current position, the inventory and the player stats."""
+        Look for *item_name* in `Player` inventory. If no item with *item_name* is found, look in the inventory of the current `Tile`.
 
-    def __init__(self, name: str, inventory_size: int = 10):
-        self.name = name
-        self.inventory = Inventory(owned_by=self, size=inventory_size)
-
-    def move(self, direction: str):
-        if direction not in ['n', 'e', 's', 'w']:
-            print("Beep! This direction is not valid!")
-
-    def __str__(self):
-        return self.name
-
-    def __repr__(self):
-        return self.__str__()
+        Returns:
+            If item exists, return Item with *item_name*, otherwise return None.
+        """
+        for inventory in [self.p.inventory, self.w.current_tile.inventory]:
+            item = inventory.get_item(item_name)
+            if item and len(item) is 1:
+                return item[0]
+        return None
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     t = Textadventure('Jannis', 'Kappengasse')
