@@ -13,11 +13,16 @@ class Inventory:
     def check_inventory(self):
         print(self.inventory)
 
-    def add(self, item: str):
+    def add(self, item: str, print_confirmation: bool=True):
         """Add items to your inventory."""
         if len(self.items) < self.size:
             self.items.append(item)
-            print(f"You added {item} to your inventory!")
+            if print_confirmation:
+                if self.owner.__class__.__name__ is 'Player':
+                    target = 'your'
+                else:
+                    target = f"{self.owner}'s"
+                print(f"You added {item} to {target} inventory!")
         else:
             print("Your inventory is full. Discard an item before you can add new ones!")
 
@@ -77,10 +82,10 @@ class GlobalInventory(Inventory):
     def distribute_items(self, world, player):
         for item in self.items:
             if item.location.lower() == 'player':
-                player.inventory.add(item)
+                player.inventory.add(item, False)
             else:
                 try:
-                    world.get_tile(item.location).inventory.add(item)
+                    world.get_tile(item.location).inventory.add(item, False)
                 except AttributeError:
                     logging.error('The initial location %s of %s cannot be associated with any tile.', item.location, item)
 
@@ -91,8 +96,12 @@ class Item:
     def __init__(self, name: str, description: str, is_obtainable, start_location: str):
         self.name = name
         self.description = description
-        self.is_obtainable = bool(is_obtainable)
+        self.is_obtainable = bool(int(is_obtainable))
         self.location = start_location
+        self.error_msg = {
+            "take": "It probably won't fit.",
+            "default": "Now is not the time for this.",
+        }
 
     def __str__(self):
         return self.name
