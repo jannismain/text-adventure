@@ -3,34 +3,26 @@
 import sys
 import os
 import csv
-import time
-import random
 import logging
+import argparse
 
 from World import World
 from Inventory import Inventory, GlobalInventory
 from Player import Player
-
-# TYPING_SPEED = 150  # wpm
-# immediate_print = print
+from Terminal import *
 
 
-# def print(t, end="\n"):
-#     for l in str(t):
-#         sys.stdout.write(l)
-#         sys.stdout.flush()
-#         time.sleep(random.random() * 10.0 / TYPING_SPEED)
-#     immediate_print('', end=end)
+__version__ = 0.1
 
 
 class Textadventure:
     """Main class of the Textadventure game."""
 
     def __init__(self, name_player: str, name_game: str):
+        name_player, name_game = self.welcome(name_player, name_game)
         self.w = World(f'{name_game.lower()}_places.csv')
         self.p = Player(name_player)
         self.i = GlobalInventory(f'{name_game.lower()}_items.csv', world=self.w, player=self.p)
-        self.welcome(name_player, name_game)
         self.main_loop()
 
     def main_loop(self):
@@ -38,19 +30,18 @@ class Textadventure:
         print(f"Your current position is '{self.w.current_tile.name}'.")
         while not won:
             print(self.w.current_tile.description)
-            print(self.w.current_tile.inventory)
+            # print(self.w.current_tile.inventory)
             print(f"""Exits are: {", ".join(self.w.current_tile.exits)}""")
             moved = False
             while not moved:
-                input_cmd = input("Input> ")
-                input_cmd = input_cmd.split(" ")
-                if input_cmd[0] in ['l', 'look']:
+                user_input = inputn("> ").split(" ")
+                if user_input[0] in ['l', 'look']:
                     for direction, tile in self.w.current_tile.surrounding.items():
                         if tile:
                             print(f"To the {direction} is '{tile}'", end="\n")
-                elif input_cmd[0] in ['e', 'examine']:
-                    if len(input_cmd) > 1:
-                        item_name = " ".join(input_cmd[1:])
+                elif user_input[0] in ['e', 'examine']:
+                    if len(user_input) > 1:
+                        item_name = " ".join(user_input[1:])
                         item = self.w.current_tile.inventory.get_item(item_name)
                         if not item:  # check inventory, if item cannot be found with Tile
                             item = self.p.inventory.get_item(item_name)
@@ -60,50 +51,71 @@ class Textadventure:
                             print(f"Beep! {item_name} cannot be found here!")
                     else:
                         print(self.w.current_tile.inventory)
-                elif input_cmd[0] in ['m', 'move']:
-                    self.w.move(input_cmd[1])
+                elif user_input[0] in ['m', 'move']:
+                    self.w.move(user_input[1])
                     moved = True
-                elif input_cmd[0] in ['h', 'help']:
+                elif user_input[0] in ['h', 'help']:
                     self.print_rules()
-                elif input_cmd[0] in ['i', 'inventory']:
+                elif user_input[0] in ['i', 'inventory']:
                     print(self.p.inventory)
-                elif input_cmd[0] in ['q', 'quit']:
+                elif user_input[0] in ['q', 'quit']:
                     print("Do you really want go quit the game? [yes]|no")
-                    if input("> ") in ['yes', 'y', '']:
+                    if inputn("> ") in ['yes', 'y', '']:
                         exit()
 
     def welcome(self, name_player: str=None, name_game: str=None):
+        clear()
         if not name_player:
             print("Welcome kind sir,")
             print("what is your name?")
-            name_player = input("> ")
+            name_player = inputn("> ")
         print("Greetings {}! I am Alfred and I will be guiding you through a text adventure of your choosing.".format(name_player))
         if not name_game:
-            print("What adventure do you want to take on today?")
-            name_game = input("> ")
-        print("Ahh! I see... You want to play '{}'. What an excellent choice!".format(name_game))
-        print("Are you already familiar with the rules? [yes]|no")
-        if input("> ") not in ['yes', 'y', '']:
-            print("Then, let me tell you how to play this game:")
+            print("What adventure do you want to embark on today?")
+            name_game = inputn("> ")
+        print("'{}'! What an excellent choice!".format(name_game))
+        print("Do you already know how to play this game? [yes]|no")
+        if inputn("> ") not in ['yes', 'y', '']:
+            print("Then, let me tell you:")
             self.print_rules(header=False)
-            print("Now that you know the rules, let's begin the adventure! Have fun!")
+            print("Now that you know how to play this game, let's begin the adventure! Have fun!")
         else:
             print("Well, then let's start right away! Have fun!")
+        print("\nPress ENTER to start the game...", end='')
+        input('')  # keep separate, as input does appear immediately, while print simulates typing!
+        clear()
+        return name_player, name_game
 
     def print_rules(self, header=True):
         if header:
-            print(" + + +   R U L E S   + + +")
-        print(" - Move around the world by entering 'move' follower by either 'north', 'east', 'south', or 'west'.")
-        print(" - Look around your current location with 'look'.")
-        print(" - Examine certain objects with 'examine' followed by the object's name.")
-        print(" - Check your current inventory with 'inventory'.")
-        print(" - Take an item from the current location with 'take' followed by the item's name.")
-        print(" - PRO TIP: You can also use just the first letter for each command for faster gameplay!", end="\n\n")
+            print("GAMEPLAY:")
+        print("- Move around the world by entering 'move' followed by either 'north', 'east', 'south', or 'west'.")
+        print("- Look around your current location with 'look'.")
+        print("- Examine certain objects with 'examine' followed by the object's name.")
+        print("- Check your current inventory with 'inventory'.")
+        print("- Take an item from the current location with 'take' followed by the item's name.")
+        print("- PRO TIP: You can also use just the first letter for each command for faster gameplay!", end="\n\n")
 
     def print_surroundings(self):
         pass
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
-    t = Textadventure('Jannis', 'Kappengasse')
+    import sys
+
+    arg_handler = argparse.ArgumentParser(prog='Textadventure v{}'.format(__version__),
+                                          description="A customizable Textadventure written in Python.",
+                                          formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    arg_handler.add_argument('player_name', default=None, type=str, nargs='?', help='Your name')
+    arg_handler.add_argument('-v', '--verbose', action='count', default=0, help='Enables logging')
+    arg_handler.add_argument(
+        'game_name',
+        default=None,
+        type=str,
+        nargs='?',
+        help='The name of the game you want to play')
+
+    args = arg_handler.parse_args()
+    if args.verbose > 0:
+        logging.basicConfig(level=logging.DEBUG)
+    t = Textadventure(args.player_name, args.game_name)
