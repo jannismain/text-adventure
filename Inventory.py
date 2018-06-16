@@ -2,6 +2,8 @@ import csv
 import logging
 from typing import Union
 
+import Player
+
 
 class Inventory:
     """Inventory class for Textadventure."""
@@ -14,11 +16,12 @@ class Inventory:
     def check_inventory(self):
         print(self.inventory)
 
-    def add(self, item: str):
+    def add(self, item: str, silent: bool=False):
         """Add items to your inventory."""
         if len(self.items) < self.size:
             self.items.append(item)
-            print(f"You added {item} to your inventory!")
+            if not silent:
+                print(f"You added {item} to your inventory!")
         else:
             print("Your inventory is full. Discard an item before you can add new ones!")
 
@@ -38,7 +41,7 @@ class Inventory:
     def __str__(self):
         if len(self.items) == 0:
             return "Your Inventory is empty!"
-        elif str(self.owner).lower() is "player":
+        elif isinstance(self.owner, Player.Player):
             return f"Inventory: {str(self.items)}"
         else:
             return f"{self.owner}: {str(self.items)}"
@@ -78,12 +81,15 @@ class GlobalInventory(Inventory):
     def distribute_items(self, world, player):
         for item in self.items:
             if item.location.lower() == 'player':
-                player.inventory.add(item)
+                player.inventory.add(item, silent=True)
             else:
                 try:
-                    world.get_tile(item.location).inventory.add(item)
+                    world.get_tile(item.location).inventory.add(item, silent=True)
                 except AttributeError:
-                    logging.error('The initial location %s of %s cannot be associated with any tile.', item.location, item)
+                    logging.error(
+                        'The initial location %s of %s cannot be associated with any tile.',
+                        item.location,
+                        item)
 
 
 class Item:
