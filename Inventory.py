@@ -1,6 +1,5 @@
 import csv
 import logging
-from typing import Union
 
 import Player
 
@@ -98,8 +97,12 @@ class Item:
     def __init__(self, name: str, description: str, is_obtainable, start_location: str):
         self.name = name
         self.description = description
-        self.is_obtainable = bool(is_obtainable)
+        self.is_obtainable = bool(int(is_obtainable))
         self.location = start_location
+        self.error_msg = {
+            "take": "It probably won't fit.",
+            "default": "Now is not the time for this.",
+        }
 
     def __str__(self):
         return self.name

@@ -1,0 +1,25 @@
+@startuml Intro
+'style options
+skinparam monochrome true
+skinparam circledCharacterRadius 10
+skinparam circledCharacterFontSize 12
+skinparam classAttributeIconSize 12
+hide empty members
+
+class Player {
+    name
+    inventory
+    move(direction)
+}
+
+class Inventory {
+    items
+    add(item)
+    remove(item)
+}
+
+class Item {
+    name
+}
+
+@enduml`

@@ -7,7 +7,6 @@ import logging
 import argparse
 
 from World import World
-from Inventory import Inventory, GlobalInventory
 from Player import Player
 from Terminal import *
 
@@ -46,7 +45,13 @@ class Textadventure:
                         if not item:  # check inventory, if item cannot be found with Tile
                             item = self.p.inventory.get_item(item_name)
                         if item:
-                            print(item[0].description)
+                            if input_cmd[0] in ['t', 'take']:
+                                if item.is_obtainable:
+                                    self.p.inventory.add(item)
+                                else:
+                                    print(f"You cannot take {item}. {item.error_msg['take']}")
+                            elif input_cmd[0] in ['e', 'examine']:
+                                print(item[0].description)
                         else:
                             print(f"Beep! {item_name} cannot be found here!")
                     else:
@@ -62,6 +67,9 @@ class Textadventure:
                     print("Do you really want go quit the game? [yes]|no")
                     if inputn("> ") in ['yes', 'y', '']:
                         exit()
+                else:
+                    print(
+                        f"Beep! {input_cmd[0]} is not a command I recognize! Type 'help' to get a list of all available commands.")
 
     def welcome(self, name_player: str=None, name_game: str=None):
         clear()
@@ -98,6 +106,20 @@ class Textadventure:
 
     def print_surroundings(self):
         pass
+
+    def get_item(self, item_name) -> Item:
+        """Retrieve item from different Inventories.
+
+        Look for *item_name* in `Player` inventory. If no item with *item_name* is found, look in the inventory of the current `Tile`.
+
+        Returns:
+            If item exists, return Item with *item_name*, otherwise return None.
+        """
+        for inventory in [self.p.inventory, self.w.current_tile.inventory]:
+            item = inventory.get_item(item_name)
+            if item and len(item) is 1:
+                return item[0]
+        return None
 
 
 if __name__ == '__main__':

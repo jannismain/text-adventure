@@ -1,4 +1,4 @@
-Doormat;On the doormat is a message written: 'Darf ich Ihnen das Tschüss anbieten?'... Sounds german!;True;Your Apartment Door
-Doorbell;It has three names on it: "Neighbour", "Other Neighbour" and your own.";False;House Entrance
-Key;A regular key. Looks like it might open a door!;True;Player
-Closed Door;It is locked. A key might open it.;False;House Entrance
+Doormat;On the doormat is a message written: 'Darf ich Ihnen das Tschüss anbieten?'... Sounds german!;1;Your Apartment Door
+Doorbell;It has three names on it: "Neighbour", "Other Neighbour" and your own.";0;House Entrance
+Key;A regular key. Looks like it might open a door!;1;Player
+Closed Door;It is locked. A key might open it.;0;House Entrance
