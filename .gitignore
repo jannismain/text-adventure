@@ -3,6 +3,8 @@
 **/*.svg
 **/*.pdf
 **/*.html
+**/*.mov
+setup.cfg
 
 # VSCode
 .vscode
