@@ -4,7 +4,7 @@ In the last exercise, we created UML diagrams of the `Textadventure`, `Player`, 
 
 We will begin with creating a stub for the class `Textadventure`. A stub is a piece of code that will later replaced by the actual implementation. It contains the structure of the class without requiring us to think about the logic of the methods and how the class is actually created just yet.
 
-<!-- 
+<!--
 ```plantuml
 @startuml
 class Textadventure {
@@ -30,7 +30,7 @@ class Textadventure:
         pass
 ```
 
-Classes are defined by the `class` keyword[^glossary] followed by its name `Textadventure` and a colon `:`. The colon indicates the beginning of a block of code that belongs together, which is why the next lines are all indented by 4 spaces. Everything below the class definition that is indented with 4 spaces or more belongs to the class `Textadventure`. 
+Classes are defined by the `class` keyword[^glossary] followed by its name `Textadventure` and a colon `:`. The colon indicates the beginning of a block of code that belongs together, which is why the next lines are all indented by 4 spaces. Everything below the class definition that is indented with 4 spaces or more belongs to the class `Textadventure`.
 
 Each class has to contain an `__init__` method which is called when a new object of this class is created.[^constructor] In this method, all properties of the class should be set, in order to guarantee, that they are available as soon as an object of this class is created. Each class method takes `self` as its first parameter, which is a reference to an object of the class it describes. We decided to create objects[^instances] of the classes `World` and `Player`
 
@@ -63,7 +63,7 @@ As we should know the name and the description of a Tile before it is created, t
 We could either store the `args` list directly or parse the first four arguments in a dictionary, where we define the direction we expect the surrounding tile to be relative to this one. Both implementations are shown below, but the list approach is commented out, as it does not make the relationship between order of arguments and direction, the surrounding tiles are located at, explicit. And as the Zen of Python states:
 
 > Explicit is better than implicit.
-[^zen]
+> [^zen]
 
 ```py
 class Tile:
@@ -71,7 +71,7 @@ class Tile:
     def __init__(self, name: str, description: str, *args)
         self.name = name
         self.description = description
-        
+
         # either save surrounding tiles as list
         # self.surroundings = args
         # ... or save surrounding tiles as dictionary
@@ -81,12 +81,11 @@ class Tile:
             "south" = args[2],
             "west" = args[3]
         }
-
 ```
 
 ## Exercise
 
-Now it is your turn. Translate the remaining UML diagrams of `World`, `Player`, `Inventory` and `Item` into Python code. Note, that each class *has* to contain the `__init__()` method, which is called when an instance of this class is created. Some classes will take arguments when they are created e.g. to set the _name_ of a `Player` from the beginning or tell `World` where to load the information about its tiles from.
+Now it is your turn. Translate the remaining UML diagrams of `World`, `Player`, `Inventory` and `Item` into Python code. Note, that each class _has_ to contain the `__init__()` method, which is called when an instance of this class is created. Some classes will take arguments when they are created e.g. to set the _name_ of a `Player` from the beginning or tell `World` where to load the information about its tiles from.
 
 ### World
 
@@ -98,11 +97,22 @@ class World {
 }
 @enduml
 ``` -->
+
 ![UML Representation of class `World`](01_Intro/01_Intro-3.png)
 
 **Note:** `World` takes a single parameter _data_ of type `str` which specifies the name of the `csv` file the information about the tiles should be loaded from.
 
-<!-- _Solution:_ -->
+_Solution:_
+
+```py
+class World:
+
+    def __init__(self, data: str):
+        tiles = self.load(data)
+
+    def load(self, data: str):
+        pass
+```
 
 ## Player
 
@@ -116,11 +126,23 @@ class Player {
 }
 @enduml
 ``` -->
+
 ![UML Representation of class `Player`](01_Intro/01_Intro-4.png)
 
 **Note:** `Player` takes two arguments _name_ and _inventory_size_. Try to add appropiate type hints for both parameters.
 
-<!-- _Solution:_ -->
+_Solution:_
+
+```py
+class Player:
+
+    def __init__(self, name: str, inventory_size: int):
+        self.name = name
+        self.inventory = Inventory(inventory_size)
+
+    def load(self, data: str):
+        pass
+```
 
 ## Inventory
 
@@ -133,11 +155,12 @@ class Inventory {
 }
 @enduml
 ``` -->
+
 ![UML Representation of class `Inventory`](01_Intro/01_Intro-5.png)
 
 **Note:** Inventory takes a single parameter _size_ of type `int` to specify the number of items an instance of `Inventory` can hold. This parameter should have a default value of `10`, if no size is provided.
 
-<!-- _Solution:_
+_Solution:_
 
 ```py
 class Inventory:
@@ -154,7 +177,7 @@ class Inventory:
     def remove(self, item: str):
         """Remove an item from your inventory."""
         pass
-``` -->
+```
 
 ## Item
 
@@ -167,11 +190,12 @@ class Item {
 }
 @enduml
 ``` -->
+
 ![UML Representation of class `Item`](01_Intro/01_Intro-6.png)
 
 **Note:** Each `Item` will take its _name_ and _description_ upon creation. Also include type hints for both parameters.
 
-<!-- _Solution:_
+_Solution:_
 
 ```py
 class Item:
@@ -180,7 +204,7 @@ class Item:
     def __init__(self, name: str, description: str):
         self.name = name
         self.description = description
-``` -->
+```
 
 <!-- ```plantuml
 @startuml
@@ -192,11 +216,23 @@ Inventory "1" *-- "n" Item : contains
 World "1" *-- "n" Tile : contains
 
 @enduml
+
 ``` -->
 
-[^glossary]: The [python glossary](https://docs.python.org/3/glossary.html) provides definitions for the most important terms.
+[^glossary]:
+
+  The [python glossary](https://docs.python.org/3/glossary.html) provides definitions for the most important terms.
+
 [^constructor]: This is called the classes' constructor.
-[^args]: While the name `args` and `kwargs` are arbitrary and can be renamed, the `*` for positional and the `**` for keyword arguments are required.
-[^stdout]: This means the standard output stream. Usually, this is the terminal / command line the program is launched from.
+[^args]:
+
+  While the name `args` and `kwargs` are arbitrary and can be renamed, the `*` for positional and the `**` for keyword arguments are required.
+
+[^stdout]:
+
+  This means the standard output stream. Usually, this is the terminal / command line the program is launched from.
+
 [^instances]: also referred to as _instances_ of a class.
-[^zen]: The Zen of Python can be explored by typing `import this` into any Python interpreter.
+[^zen]:
+
+  The Zen of Python can be explored by typing `import this` into any Python interpreter.
