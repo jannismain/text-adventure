@@ -1,7 +1,28 @@
 import csv
 import logging
+from typing import List
 
 import Player
+
+
+class Item:
+    """An item represents an object in the `Inventory`."""
+
+    def __init__(self, name: str, description: str, is_obtainable, start_location: str):
+        self.name = name
+        self.description = description
+        self.is_obtainable = bool(int(is_obtainable))
+        self.location = start_location
+        self.error_msg = {
+            "take": "It probably won't fit.",
+            "default": "Now is not the time for this.",
+        }
+
+    def __str__(self):
+        return self.name
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class Inventory:
@@ -31,10 +52,10 @@ class Inventory:
         else:
             print(f"Beep! {item} is not in your inventory!")
 
-    def exists(self, item_name: str):
-        return item_name in [str(item_name) for item_name in self.items]
+    def exists(self, item: Item):
+        return item in self.items
 
-    def get_item(self, item_name: str) -> list:
+    def get_item(self, item_name: str) -> List[Item]:
         return [item for item in self.items if item.name == item_name]
 
     def __str__(self):
@@ -89,26 +110,6 @@ class GlobalInventory(Inventory):
                         'The initial location %s of %s cannot be associated with any tile.',
                         item.location,
                         item)
-
-
-class Item:
-    """An item represents an object in the `Inventory`."""
-
-    def __init__(self, name: str, description: str, is_obtainable, start_location: str):
-        self.name = name
-        self.description = description
-        self.is_obtainable = bool(int(is_obtainable))
-        self.location = start_location
-        self.error_msg = {
-            "take": "It probably won't fit.",
-            "default": "Now is not the time for this.",
-        }
-
-    def __str__(self):
-        return self.name
-
-    def __repr__(self):
-        return self.__str__()
 
 
 if __name__ == "__main__":

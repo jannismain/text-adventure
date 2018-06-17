@@ -10,6 +10,8 @@ from World import World
 from Player import Player
 from Terminal import *
 
+import Inventory
+
 
 __version__ = 0.1
 
@@ -21,7 +23,7 @@ class Textadventure:
         name_player, name_game = self.welcome(name_player, name_game)
         self.w = World(f'{name_game.lower()}_places.csv')
         self.p = Player(name_player)
-        self.i = GlobalInventory(f'{name_game.lower()}_items.csv', world=self.w, player=self.p)
+        self.i = Inventory.GlobalInventory(f'{name_game.lower()}_items.csv', world=self.w, player=self.p)
         self.main_loop()
 
     def main_loop(self):
@@ -29,35 +31,38 @@ class Textadventure:
         print(f"Your current position is '{self.w.current_tile.name}'.")
         while not won:
             print(self.w.current_tile.description)
-            # print(self.w.current_tile.inventory)
             print(f"""Exits are: {", ".join(self.w.current_tile.exits)}""")
             moved = False
             while not moved:
+                item = None
+                direction = None
                 user_input = inputn("> ").split(" ")
+                if len(user_input) > 1:
+                    if user_input[1] in ['n', 'north', 'e', 'east', 's', 'south', 'w', 'west']:
+                        direction = user_input[1]
+                    else:
+                        item_name = " ".join(user_input[1:])
+                        item = self.get_item(item_name)
                 if user_input[0] in ['l', 'look']:
                     for direction, tile in self.w.current_tile.surrounding.items():
                         if tile:
                             print(f"To the {direction} is '{tile}'", end="\n")
-                elif user_input[0] in ['e', 'examine']:
-                    if len(user_input) > 1:
-                        item_name = " ".join(user_input[1:])
-                        item = self.w.current_tile.inventory.get_item(item_name)
-                        if not item:  # check inventory, if item cannot be found with Tile
-                            item = self.p.inventory.get_item(item_name)
-                        if item:
-                            if input_cmd[0] in ['t', 'take']:
-                                if item.is_obtainable:
-                                    self.p.inventory.add(item)
-                                else:
-                                    print(f"You cannot take {item}. {item.error_msg['take']}")
-                            elif input_cmd[0] in ['e', 'examine']:
-                                print(item[0].description)
+                elif user_input[0] in ['e', 'examine'] and not item:
+                    print(self.w.current_tile.inventory)
+                elif user_input[0] in ['e', 'examine'] and item:
+                    print(item[0].description)
+                elif user_input[0] in ['t', 'take'] and item:
+                    if not self.p.inventory.exists(item):
+                        if item.is_obtainable:
+                            self.p.inventory.add(item)
                         else:
-                            print(f"Beep! {item_name} cannot be found here!")
+                            print(f"You cannot take {item}. {item.error_msg['take']}")
                     else:
-                        print(self.w.current_tile.inventory)
-                elif user_input[0] in ['m', 'move']:
-                    self.w.move(user_input[1])
+                        print(f"{item} is already in your inventory!")
+                elif user_input[0] in ['t', 'take'] and not item:
+                    print(f"Beep! This cannot be found here!")
+                elif user_input[0] in ['m', 'move'] and direction:
+                    self.w.move(direction)
                     moved = True
                 elif user_input[0] in ['h', 'help']:
                     self.print_rules()
@@ -69,7 +74,7 @@ class Textadventure:
                         exit()
                 else:
                     print(
-                        f"Beep! {input_cmd[0]} is not a command I recognize! Type 'help' to get a list of all available commands.")
+                        f"Beep! {user_input[0]} is not a command I recognize! Type 'help' to get a list of all available commands.")
 
     def welcome(self, name_player: str=None, name_game: str=None):
         clear()
@@ -94,7 +99,7 @@ class Textadventure:
         clear()
         return name_player, name_game
 
-    def print_rules(self, header=True):
+    def print_rules(self, header: bool=True):
         if header:
             print("GAMEPLAY:")
         print("- Move around the world by entering 'move' followed by either 'north', 'east', 'south', or 'west'.")
@@ -107,8 +112,8 @@ class Textadventure:
     def print_surroundings(self):
         pass
 
-    def get_item(self, item_name) -> Item:
-        """Retrieve item from different Inventories.
+    def get_item(self, item_name: str) -> Inventory.Item:
+        """Retrieve item across inventories accessible to player.
 
         Look for *item_name* in `Player` inventory. If no item with *item_name* is found, look in the inventory of the current `Tile`.
 
@@ -128,11 +133,11 @@ if __name__ == '__main__':
     arg_handler = argparse.ArgumentParser(prog='Textadventure v{}'.format(__version__),
                                           description="A customizable Textadventure written in Python.",
                                           formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    arg_handler.add_argument('player_name', default=None, type=str, nargs='?', help='Your name')
+    arg_handler.add_argument('player_name', default='Jannis', type=str, nargs='?', help='Your name')
     arg_handler.add_argument('-v', '--verbose', action='count', default=0, help='Enables logging')
     arg_handler.add_argument(
         'game_name',
-        default=None,
+        default='Kappengasse',
         type=str,
         nargs='?',
         help='The name of the game you want to play')
