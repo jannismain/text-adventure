@@ -1,7 +1,6 @@
-import sys
-import os
 import csv
 import logging
+import pathlib
 
 from Inventory import Item, Inventory
 
@@ -16,16 +15,20 @@ DIRECTIONS = {
 class World:
     """Word-class, that holds information about available tiles and items."""
 
-    def __init__(self, data: str):
-        self.tiles, self.current_tile = self.load(data)
-        [tile.discover_tiles(self) for tile in self.tiles]  # replace tile's surroundings reference with actual Tiles
+    def __init__(self, game: str):
+        self.tiles, self.current_tile = self.load(game)
+        # replace tile's surroundings reference with actual Tiles
+        [tile.discover_tiles(self) for tile in self.tiles]
         logging.debug(f"Loaded Tiles: {self.tiles}")
 
     @staticmethod
-    def load(datafile: str):
+    def load(game_places: pathlib.Path):
         tiles = []
         start_at = ""
-        with open(datafile) as csv_file:
+        if not game_places.exists():
+            logging.error(f"Game '{game_places.parent.name}' doesn't define a '{game_places.name}'!")
+            exit(1)
+        with game_places.open() as csv_file:
             data = csv.reader(csv_file)
             for datarow in data:
                 try:
@@ -107,6 +110,5 @@ class Tile:
         return self.__str__()
 
 
-if __name__ == '__main__':
-    import sys
-    World('kappengasse_places.csv')
+if __name__ == "__main__":
+    World(pathlib.Path(__file__).parent/"games"/"kappengasse"/"places.csv")

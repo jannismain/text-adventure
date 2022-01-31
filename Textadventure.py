@@ -14,16 +14,21 @@ import Inventory
 
 
 __version__ = 0.1
+DIR_GAMES = pathlib.Path(__file__).parent/'games'
 
 
 class Textadventure:
     """Main class of the Textadventure game."""
 
     def __init__(self, name_player: str, name_game: str):
-        name_player, name_game = self.welcome(name_player, name_game)
-        self.w = World(f'{name_game.lower()}_places.csv')
+        gamefile = lambda file: DIR_GAMES/name_game.lower()/f'{file}.csv'
+        
+        self.w = World(gamefile("places"))
         self.p = Player(name_player)
-        self.i = Inventory.GlobalInventory(f'{name_game.lower()}_items.csv', world=self.w, player=self.p)
+        self.i = Inventory.GlobalInventory(gamefile("items"), world=self.w, player=self.p)
+        
+        name_player, name_game = self.welcome(name_player, name_game)
+        
         self.main_loop()
 
     def main_loop(self):

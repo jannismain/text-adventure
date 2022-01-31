@@ -1,5 +1,6 @@
 import csv
 import logging
+import pathlib
 from typing import List
 
 import Player
@@ -83,9 +84,9 @@ class GlobalInventory(Inventory):
         return super().__str__().replace("Inventory", "GlobalInventory", 1)
 
     @staticmethod
-    def load(datafile: str):
+    def load(datafile: pathlib.Path):
         items = []
-        with open(datafile) as csv_file:
+        with datafile.open() as csv_file:
             data = csv.reader(csv_file, delimiter=';')
             for datarow in data:
                 try:
