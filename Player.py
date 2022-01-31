@@ -9,7 +9,7 @@ class Player:
         self.inventory = Inventory.Inventory(owned_by=self, size=inventory_size)
 
     def move(self, direction: str):
-        if direction not in ['n', 'e', 's', 'w']:
+        if direction not in ["n", "e", "s", "w"]:
             print("Beep! This direction is not valid!")
 
     def __str__(self):

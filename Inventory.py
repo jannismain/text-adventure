@@ -37,14 +37,16 @@ class Inventory:
     def check_inventory(self):
         print(self.inventory)
 
-    def add(self, item: str, silent: bool=False):
+    def add(self, item: str, silent: bool = False):
         """Add items to your inventory."""
         if len(self.items) < self.size:
             self.items.append(item)
             if not silent:
                 print(f"You added {item} to your inventory!")
         else:
-            print("Your inventory is full. Discard an item before you can add new ones!")
+            print(
+                "Your inventory is full. Discard an item before you can add new ones!"
+            )
 
     def remove(self, item: str):
         """Remove items from your inventory."""
@@ -84,35 +86,41 @@ class GlobalInventory(Inventory):
         return super().__str__().replace("Inventory", "GlobalInventory", 1)
 
     @staticmethod
-    def load(datafile: pathlib.Path):
+    def load(game_items: pathlib.Path):
         items = []
-        with datafile.open() as csv_file:
-            data = csv.reader(csv_file, delimiter=';')
+        with game_items.open() as csv_file:
+            data = csv.reader(csv_file, delimiter=";")
             for datarow in data:
                 try:
                     items.append(Item(*datarow))
                 except AttributeError:
-                    print('Beep! The item entry for {datarow[0]} does not provide sufficient information.')
-                    print("A minimal item entry has the following four values: name, description, is_obtainable and it's start location.")
+                    print(
+                        "Beep! The item entry for {datarow[0]} does not provide sufficient information."
+                    )
+                    print(
+                        "A minimal item entry has the following four values: name, description, is_obtainable and it's start location."
+                    )
                 except AssertionError:
                     print(
-                        f"Beep! Place '{datarow[0]}' does not seem to be a valid item. It's initial location is not with the player and cannot be associated with any tile.")
+                        f"Beep! Place '{datarow[0]}' does not seem to be a valid item. It's initial location is not with the player and cannot be associated with any tile."
+                    )
         return items
 
     def distribute_items(self, world, player):
         for item in self.items:
-            if item.location.lower() == 'player':
+            if item.location.lower() == "player":
                 player.inventory.add(item, silent=True)
             else:
                 try:
                     world.get_tile(item.location).inventory.add(item, silent=True)
                 except AttributeError:
                     logging.error(
-                        'The initial location %s of %s cannot be associated with any tile.',
+                        "The initial location %s of %s cannot be associated with any tile.",
                         item.location,
-                        item)
+                        item,
+                    )
 
 
 if __name__ == "__main__":
-    i = GlobalInventory('kappengasse_items.csv', None, None)
+    i = GlobalInventory("kappengasse_items.csv", None, None)
     print(i)

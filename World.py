@@ -2,14 +2,9 @@ import csv
 import logging
 import pathlib
 
-from Inventory import Item, Inventory
+from Inventory import Inventory
 
-DIRECTIONS = {
-    'n': 'north',
-    'e': 'east',
-    's': 'south',
-    'w': 'west'
-}
+DIRECTIONS = {"n": "north", "e": "east", "s": "south", "w": "west"}
 
 
 class World:
@@ -26,7 +21,9 @@ class World:
         tiles = []
         start_at = ""
         if not game_places.exists():
-            logging.error(f"Game '{game_places.parent.name}' doesn't define a '{game_places.name}'!")
+            logging.error(
+                f"Game '{game_places.parent.name}' doesn't define a '{game_places.name}'!"
+            )
             exit(1)
         with game_places.open() as csv_file:
             data = csv.reader(csv_file)
@@ -34,19 +31,27 @@ class World:
                 try:
                     tiles.append(Tile(*datarow))
                 except AttributeError:
-                    print("Beep! The description of {} does not provide sufficient information.".format(datarow[0]))
-                    print("A minimal place description has the following 5 entries: name, north_exit, east_exit, south_exit, west_exit")
-                    print("Additional entries are considered point of interests or items available for closer examination.")
+                    print(
+                        f"Beep! The description of {datarow[0]} does not provide sufficient information."
+                    )
+                    print(
+                        "A minimal place description has the following 5 entries: name, north_exit, east_exit, south_exit, west_exit"
+                    )
+                    print(
+                        "Additional entries are considered point of interests or items available for closer examination."
+                    )
                 except AssertionError:
                     print(
-                        f"Beep! Place '{datarow[0]}' does not seem to be a valid place. It is not connected to any other tile at the moment.")
+                        f"Beep! Place '{datarow[0]}' does not seem to be a valid place. It is not connected to any other tile at the moment."
+                    )
 
                 if datarow[0].endswith("*"):
                     if start_at == "":
                         start_at = tiles[-1]
                     else:
                         raise AttributeError(
-                            "Data contains more than one start tile. Start tiles are indicated by a '*' at the end of a place name.")
+                            "Data contains more than one start tile. Start tiles are indicated by a '*' at the end of a place name."
+                        )
         return tiles, start_at
 
     def move(self, direction: str):
@@ -83,12 +88,7 @@ class Tile:
             self.visited = False
         self.description = description
 
-        self.surrounding = {
-            "north": north,
-            "east": east,
-            "south": south,
-            "west": west
-        }
+        self.surrounding = {"north": north, "east": east, "south": south, "west": west}
         self.inventory = Inventory(self)
         self.test_tile_validity()
 
@@ -97,7 +97,7 @@ class Tile:
         return [dir for (dir, tile) in self.surrounding.items() if tile != None]
 
     def test_tile_validity(self):
-        assert(any([tile for tile in self.surrounding.items() if tile != "None"]))
+        assert any([tile for tile in self.surrounding.items() if tile != "None"])
 
     def discover_tiles(self, world: World):
         for dir, tile_desc in self.surrounding.items():
@@ -111,4 +111,4 @@ class Tile:
 
 
 if __name__ == "__main__":
-    World(pathlib.Path(__file__).parent/"games"/"kappengasse"/"places.csv")
+    World(pathlib.Path(__file__).parent / "games" / "kappengasse" / "places.csv")

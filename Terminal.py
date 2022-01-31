@@ -15,16 +15,16 @@ def print(t, end="\n"):
         #     time.sleep(((random.random() + 1) / 2) / 10)  # sleep in [0.05s; 0.1s]
         # else:
         time.sleep(random.random() * 10.0 / TYPING_SPEED)
-    immediate_print('', end=end)
+    immediate_print("", end=end)
     # time.sleep(((random.random() + 1) / 2) / 10)  # sleep in [0.05s; 0.1s]
 
 
 def clear():
-    os.system('cls' if os.name == 'nt' else 'clear')
+    os.system("cls" if os.name == "nt" else "clear")
 
 
 def inputn(*args, **kwargs):
-    immediate_print('')
+    immediate_print("")
     ret = input(*args, **kwargs)
-    immediate_print('')
+    immediate_print("")
     return ret

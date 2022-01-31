@@ -3,7 +3,6 @@ from Player import Player
 
 
 class Textadventure:
-
     def __init__(self):
         self.world = World()
         self.player = Player()
@@ -13,5 +12,5 @@ class Textadventure:
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     Textadventure()
